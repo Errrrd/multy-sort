@@ -106,8 +106,8 @@ int main() {
     int delta = size / TH;
     
     fclose(in);
-    omp_set_dynamic(0);      // запретить библиотеке openmp менять число потоков во время исполнения
-    omp_set_num_threads(TH); // установить число потоков: TH
+    omp_set_dynamic(0);      // Р·Р°РїСЂРµС‚РёС‚СЊ Р±РёР±Р»РёРѕС‚РµРєРµ openmp РјРµРЅСЏС‚СЊ С‡РёСЃР»Рѕ РїРѕС‚РѕРєРѕРІ РІРѕ РІСЂРµРјСЏ РёСЃРїРѕР»РЅРµРЅРёСЏ
+    omp_set_num_threads(TH); // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С‡РёСЃР»Рѕ РїРѕС‚РѕРєРѕРІ: TH
     
     cout << "size = " << size << endl;
     #pragma omp parallel
