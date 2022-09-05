@@ -34,7 +34,7 @@ int main() {
     int *array = new int[SZ];
     int size = arrayScan(in, array, SZ);
     int object = 1234567;
-	//int object = 22334455;
+    //int object = 22334455;
     int delta = size / TH;
     int* unknown = NULL;
     int* result = NULL;
@@ -54,7 +54,7 @@ int main() {
         }
         
         //cout <<"\ncreating thread, " << i << endl;
-		printf("creating thread, %d\n", i);
+        printf("creating thread, %d\n", i);
         if ( result == NULL ) {
             unknown = find(object, array, start, end);
             // unknown = find(object, array, 0, size);
@@ -65,7 +65,7 @@ int main() {
     }
     if ( unknown != NULL ) {
         //cout << "addres object is " << result << ", object = " << *result << endl;
-		printf("addres object is %p , object = %d\n", result, *result);
+        printf("addres object is %p , object = %d\n", result, *result);
     } else {
         cout << "object not found " << endl;
     }

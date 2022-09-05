@@ -65,7 +65,7 @@ template<typename T>
 void merge(T array[], int lo, int mid, int hi) {
     int size = hi - lo;
     T *buffer = new T[size];
-	
+    
     for ( int i = 0, j = lo, k = mid; i < size; ) {
         if ( array[j] < array[k] && j < mid ) {
             buffer[i] = array[j];
@@ -83,11 +83,11 @@ void merge(T array[], int lo, int mid, int hi) {
         }
     }
     
-	for ( int i = 0, j = lo; i < size; i++, j++ ) {
+    for ( int i = 0, j = lo; i < size; i++, j++ ) {
         array[j] = buffer[i];
     }
-	
-	delete [] buffer;
+    
+    delete [] buffer;
 }
 
 template<typename T>
@@ -121,12 +121,12 @@ int main() {
                 end = size;
             }
             //cout <<"\ncreating thread, " << i << endl;
-			printf("creating thread - %d\n", i);
-			
+            printf("creating thread - %d\n", i);
+            
             quickSort(array, start, end-1);
         }
     }
-	
+    
     for( int step = delta; step < size; ) {
         int start = 0;
         int mid = start + step;
@@ -137,15 +137,15 @@ int main() {
         for(end = start + step; end < size; end += step) {
             //cout << "\nmerge " << start << '-' << end;
             merge(array, start, mid, end);
-			printf("merge %d - %d\n", start, end);
-			start += step;
-			mid += step;
+            printf("merge %d - %d\n", start, end);
+            start += step;
+            mid += step;
         }
         
         if ( mid < size ) {
             {
                 //cout << "\nmerge " << start << '-' << size;
-				printf("merge %d - %d\n", start, size);
+                printf("merge %d - %d\n", start, size);
                 merge(array, start, mid, size);
             }
         }
@@ -154,8 +154,8 @@ int main() {
     arrayPrint(out, array, size);
 
     delete [] array;
-	fclose(out);
-	
+    fclose(out);
+    
     return 0;
 }
 
