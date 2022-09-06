@@ -9,8 +9,6 @@
 
 using namespace std;
 
-unsigned long long countOfSwap = 0;
-unsigned long long countOfCmp = 0;
 template<typename T>
 int partition(T array[], int start, int end) {
     int pivot = (start + end) / 2;
