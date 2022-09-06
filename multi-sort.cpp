@@ -4,11 +4,13 @@
 #include <iostream>
 #include <omp.h>
 
-#define TH 4
-#define SZ 1043213
+#define TH 8
+#define SZ 1023999
 
 using namespace std;
 
+unsigned long long countOfSwap = 0;
+unsigned long long countOfCmp = 0;
 template<typename T>
 int partition(T array[], int start, int end) {
     int pivot = (start + end) / 2;
@@ -39,7 +41,13 @@ int partition(T array[], int start, int end) {
     array[end] = tmp;
     return lo;
 }
-
+template<typename T>
+bool check(T array[], int start, int end) {
+    for(int i = start+1; i < end; i++) {
+        if (array[i-1] > array[i]) { return false; }
+    }
+    return true;
+}
 template<typename T>
 void quickSort(T array[], int lo, int hi) {
     int pivot = partition(array, lo, hi);
@@ -60,7 +68,7 @@ void arrayPrint(FILE *out, T array[], int size) {
     }
     fprintf(out, "%d\n", array[last]);
 }
-
+//*
 template<typename T>
 void merge(T array[], int lo, int mid, int hi) {
     int size = hi - lo;
@@ -89,6 +97,7 @@ void merge(T array[], int lo, int mid, int hi) {
     
     delete [] buffer;
 }
+//*/
 
 template<typename T>
 int arrayScan(FILE *in, T array[], int len) {
@@ -104,7 +113,7 @@ int main() {
     int *array = new int[SZ];
     int size = arrayScan(in, array, SZ);
     int delta = size / TH;
-    
+    cout << "task.in opened" << endl;
     fclose(in);
     omp_set_dynamic(0);      // запретить библиотеке openmp менять число потоков во время исполнения
     omp_set_num_threads(TH); // установить число потоков: TH
@@ -112,7 +121,7 @@ int main() {
     cout << "size = " << size << endl;
     #pragma omp parallel
     {
-    #pragma omp for
+        #pragma omp for
         for(int i = 0; i < TH; i++ ) {
             int start = delta * i;
             int end = start + delta;
@@ -121,9 +130,10 @@ int main() {
                 end = size;
             }
             //cout <<"\ncreating thread, " << i << endl;
-            printf("creating thread - %d\n", i);
+            printf("creating thread - %d\n, start:%d, end:%d\n", i, start, end);
             
             quickSort(array, start, end-1);
+            printf("thread %d check slice: %s\n", i, check(array, start, end)?"ok":"fail");
         }
     }
     
@@ -133,24 +143,26 @@ int main() {
         int end;
         
         step *= 2;
-        #pragma omp parallel for
-        for(end = start + step; end < size; end += step) {
-            //cout << "\nmerge " << start << '-' << end;
+        #pragma omp for
+        for(end = start + step; end <= size; end += step) {
+			if(size-end < step) { end = size;}
             merge(array, start, mid, end);
-            printf("merge %d - %d\n", start, end);
+			printf("check merge %d - %d - %d: %s\n", start, mid, end, check(array, start, end)?"ok":"fail");
+            //printf("merge %d - %d - %d\n", start, mid, end);
             start += step;
             mid += step;
         }
         
-        if ( mid < size ) {
-            {
-                //cout << "\nmerge " << start << '-' << size;
-                printf("merge %d - %d\n", start, size);
-                merge(array, start, mid, size);
-            }
-        }
+        // if ( mid < size ) {
+            // {
+                // printf("merge %d - %d - %d\n", start, mid, size);
+                // merge(array, start, mid, size);
+            // }
+        // }
+		
     }
-    
+	
+    printf("array check all: %s\n", check(array, 0, SZ)?"ok":"fail");
     arrayPrint(out, array, size);
 
     delete [] array;
