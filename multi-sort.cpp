@@ -5,7 +5,7 @@
 #include <omp.h>
 
 #define TH 8
-#define SZ 1023999
+#define SZ 399999
 
 using namespace std;
 
@@ -119,49 +119,52 @@ int main() {
     omp_set_num_threads(TH); // установить число потоков: TH
     
     cout << "size = " << size << endl;
-    #pragma omp parallel
-    {
-        #pragma omp for
-        for(int i = 0; i < TH; i++ ) {
-            int start = delta * i;
-            int end = start + delta;
-            
-            if ( i == TH - 1 ) {
-                end = size;
+    if (TH > 1) {
+        #pragma omp parallel
+        {
+            #pragma omp for
+            for(int i = 0; i < TH; i++ ) {
+                int start = delta * i;
+                int end = start + delta;
+                
+                if ( i == TH - 1 ) {
+                    end = size;
+                }
+                //cout <<"\ncreating thread, " << i << endl;
+                printf("creating thread - %d\n, start:%d, end:%d\n", i, start, end);
+                
+                quickSort(array, start, end-1);
+                printf("thread %d check slice: %s\n", i, check(array, start, end)?"ok":"fail");
             }
-            //cout <<"\ncreating thread, " << i << endl;
-            printf("creating thread - %d\n, start:%d, end:%d\n", i, start, end);
+        }
+        
+        for( int step = delta; step < size; ) {
+            int start = 0;
+            int mid = start + step;
+            int end;
             
-            quickSort(array, start, end-1);
-            printf("thread %d check slice: %s\n", i, check(array, start, end)?"ok":"fail");
+            step *= 2;
+            #pragma omp for
+            for(end = start + step; end <= size; end += step) {
+                //if(size-end < step) { end = size;}
+                merge(array, start, mid, end);
+                printf("check merge %d - %d - %d: %s\n", start, mid, end, check(array, start, end)?"ok":"fail");
+                //printf("merge %d - %d - %d\n", start, mid, end);
+                start += step;
+                mid += step;
+            }
+            
+            if ( mid < size ) {
+                {
+                    printf("merge %d - %d - %d\n", start, mid, size);
+                    merge(array, start, mid, size);
+                }
+            }
+            
         }
+    } else {
+        quickSort(array, 0, SZ-1);
     }
-    
-    for( int step = delta; step < size; ) {
-        int start = 0;
-        int mid = start + step;
-        int end;
-        
-        step *= 2;
-        #pragma omp for
-        for(end = start + step; end <= size; end += step) {
-			if(size-end < step) { end = size;}
-            merge(array, start, mid, end);
-			printf("check merge %d - %d - %d: %s\n", start, mid, end, check(array, start, end)?"ok":"fail");
-            //printf("merge %d - %d - %d\n", start, mid, end);
-            start += step;
-            mid += step;
-        }
-        
-        // if ( mid < size ) {
-            // {
-                // printf("merge %d - %d - %d\n", start, mid, size);
-                // merge(array, start, mid, size);
-            // }
-        // }
-		
-    }
-	
     printf("array check all: %s\n", check(array, 0, SZ)?"ok":"fail");
     arrayPrint(out, array, size);
 
