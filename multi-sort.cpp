@@ -161,9 +161,9 @@ int main() {
             
         }
     } else {
-        quickSort(array, 0, SZ-1);
+        quickSort(array, 0, size-1);
     }
-    printf("array check all: %s\n", check(array, 0, SZ)?"ok":"fail");
+    printf("array check all: %s\n", check(array, 0, size)?"ok":"fail");
     arrayPrint(out, array, size);
 
     delete [] array;
